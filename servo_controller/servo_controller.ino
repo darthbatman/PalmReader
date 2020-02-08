@@ -1,5 +1,9 @@
 #include <Servo.h>
+#include <SoftwareSerial.h>
 
+SoftwareSerial serial(0, 1);
+
+const boolean BRAILLE_NONE[] = {};
 const boolean BRAILLE_ALL_DOWN[] = { false, false, false, false, false, false };
 const boolean BRAILLE_ALL_UP[] = { true, true, true, true, true, true };
 const boolean BRAILLE_A[] = { true, false, false, false, false, false };
@@ -123,7 +127,7 @@ const boolean * brailleCharFor(char c) {
     case '9':
       return BRAILLE_9;
     default:
-      return BRAILLE_ALL_DOWN;
+      return BRAILLE_NONE;
   }
 }
 
@@ -168,9 +172,13 @@ void activateBrailleString(String s) {
   s.toUpperCase();
   int i;
   for (i = 0; i < s.length(); i++) {
-    activateBrailleChar(brailleCharFor(s.charAt(i)));
-    delay(timeBetweenDisplayingChars);
+    const boolean *c = brailleCharFor(s.charAt(i));
+    if (c != BRAILLE_NONE) {
+      activateBrailleChar(c);
+      delay(timeBetweenDisplayingChars);
+    }
   }
+  activateBrailleChar(BRAILLE_ALL_DOWN);
 }
 
 void setup() {
@@ -180,8 +188,20 @@ void setup() {
   servo4.attach(10);
   servo5.attach(6);
   servo6.attach(9);
+
+  Serial.begin(9600);
+
+  serial.begin(9600);  
 }
 
 void loop() {
-  activateBrailleString("tony");
+  String str;
+  
+  str.reserve(200);
+  
+  if (serial.available()) {
+    str = serial.readString();
+    Serial.println("Read string: " + str);
+    activateBrailleString(str);
+  }
 }
