@@ -132,39 +132,41 @@ const boolean * brailleCharFor(char c) {
 }
 
 void activateBrailleChar(const boolean *c) {
-  int servoPos;
-  for (servoPos = 0; servoPos < 90; servoPos++) {
+  int servoPosLeft;
+  int servoPosRight = 90;
+  for (servoPosLeft = 0; servoPosLeft < 90; servoPosLeft++) {
     if (c[0]) {
-      servo1.write(servoPos);
+      servo1.write(servoPosLeft);
     } else {
       servo1.write(0);
     }
     if (c[1]) {
-      servo2.write(servoPos);
+      servo2.write(servoPosRight);
     } else {
-      servo2.write(0);
+      servo2.write(90);
     }
     if (c[2]) {
-      servo3.write(servoPos);
+      servo3.write(servoPosLeft);
     } else {
       servo3.write(0);
     }
     if (c[3]) {
-      servo4.write(servoPos);
+      servo4.write(servoPosRight);
     } else {
-      servo4.write(0);
+      servo4.write(90);
     }
     if (c[4]) {
-      servo5.write(servoPos);
+      servo5.write(servoPosLeft);
     } else {
       servo5.write(0);
     }
     if (c[5]) {
-      servo6.write(servoPos);
+      servo6.write(servoPosRight);
     } else {
-      servo6.write(0);
+      servo6.write(90);
     }
     delay(2);
+    servoPosRight--;
   }
 }
 
@@ -195,6 +197,7 @@ void setup() {
 }
 
 void loop() {
+  activateBrailleChar(BRAILLE_ALL_DOWN);
   String str;
   
   str.reserve(200);
